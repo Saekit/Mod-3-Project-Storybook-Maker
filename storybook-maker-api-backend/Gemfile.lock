@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/stympy/faker.git
+  revision: abb381cd3183d3f94718c0ccb6a0e82302501f39
+  branch: master
+  specs:
+    faker (1.9.1)
+      i18n (>= 0.7)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -133,6 +141,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers
   byebug
+  faker!
   listen (>= 3.0.5, < 3.2)
   puma (~> 3.7)
   rack-cors
