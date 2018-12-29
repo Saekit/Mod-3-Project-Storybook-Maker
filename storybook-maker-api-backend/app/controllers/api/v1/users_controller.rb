@@ -1,9 +1,13 @@
 module Api
   module V1
     class UsersController < ApplicationController
+      before_action :find_user, only: [:show, :update, :destroy]
       def index
         @users = User.all
         render json: @users
+      end
+
+      def show
       end
 
       def create
@@ -12,16 +16,19 @@ module Api
       end
 
       def update
-        @user = User.find(params[:id])
         @user.update(user_params)
         render json: @user
       end
 
       def destroy
         @users = User.all
-        @user = User.find(params[:id])
         @user.destroy
         render json: @users
+      end
+
+      private
+      def find_user
+        @user = User.find(params[:id])
       end
 
       def user_params

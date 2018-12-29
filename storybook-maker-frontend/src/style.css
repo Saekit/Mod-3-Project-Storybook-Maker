@@ -22,26 +22,26 @@ body {
   justify-content: space-around;
   height: 300px;
 }
-.book {
+.book-cover {
   width: 150px;
   height: 170px;
   border: 1px solid rgba(0,0,0,0.6);
   border-radius: 5px;
   padding: 1em;
   margin: 1em 0 1em 0;
-  list-style-type: none;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.6);
   transition: 0.3s;
   background-color: white;
   opacity: 0.8;
+  list-style-type: none;
 }
-li.book:hover {
+.book-cover:hover {
   background-color: white;
   opacity: 1;
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
 }
 
-.modal {
+/* .modal {
   display: none;
   position: fixed;
   z-index: 1;
@@ -72,12 +72,19 @@ li.book:hover {
   color: #000;
   text-decoration: none;
   cursor: pointer;
-}
-.previous-btn {
+} */
+/* .previous-btn {
   position: relative;
   float: left;
 }
 .next-btn {
   position: relative;
   float: right;
+} */
+.book-img{
+  height: 250px;
+  width: 260px;
+}
+.hidden {
+  display: none;
 }

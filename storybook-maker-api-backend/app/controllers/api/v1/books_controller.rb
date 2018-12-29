@@ -1,9 +1,13 @@
 module Api
   module V1
     class BooksController < ApplicationController
+      before_action :find_book, only: [:show, :update, :destroy]
       def index
         @books = Book.all
         render json: @books
+      end
+
+      def show
       end
 
       def create
@@ -12,20 +16,23 @@ module Api
       end
 
       def update
-        @book = Book.find(params[:id])
         @book.update(book_params)
         render json: @book
       end
 
       def destroy
         @books = Book.all
-        @book = Book.find(params[:id])
         @book.destroy
         render json: @books
       end
 
+      private
+      def find_book
+        @book = Book.find(params[:id])
+      end
+
       def book_params
-        params.permit(:name, :user_id)
+        params.permit(:title, :user_id, :contents, :img_url)
       end
     end
   end
