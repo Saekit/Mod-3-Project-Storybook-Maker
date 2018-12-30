@@ -7,8 +7,8 @@ addNewPage();
 showButtons();
 deletePage();
 editPage();
-// let myBooks = document.querySelector("#my-books")
-// $(myBooks).on('click', sortMyBooks())
+searchBook();
+$(".search-book").on("input", searchBook);
 })
 
 //GET request for all the books
@@ -22,18 +22,6 @@ function fetchBooks(){
       })
     })
 }
-
-//when click My Books, only show books that belong to user that is logged in
-// function sortMyBooks(){
-//   fetch(books_url)
-//   .then(res => res.json())
-//   .then(json => {
-//     json.data.forEach(function(book){
-//
-//     })
-//   })
-//
-// }
 
 //shows all the books on the index page
 function loadBooks(book){
@@ -269,7 +257,6 @@ function deletePage(){
 }
 
 //edit a page in a book
-//if page id === edit-page-btn page id, then populate the inputs
 function editPage(){
   let modalBody = $(".modal-body")
   $(modalBody).on("click", function(e){
@@ -296,7 +283,7 @@ function editPage(){
   })
 }
 
-
+//on submit will update the database , optimistic rendering
 function fetchEditPage(parent, bookId, pageId, userId){
   let editForm = parent.querySelector(".edit-page-form")
   $(editForm).on("submit", function(e){
@@ -324,27 +311,27 @@ function fetchEditPage(parent, bookId, pageId, userId){
   })
 }
 
-
+//search for anything included within the book cover, connected to the input at the top
+function searchBook(){
+  let search = document.querySelector(".search-book").value
+  let allBooks = document.querySelectorAll("#all-books li p")
+  let booksArray = Array.from(allBooks)
+  booksArray.forEach(function(book, index){
+    if (book.innerText.includes(search)){
+      allBooks[index].parentElement.style.display = 'block';
+    }else{
+      allBooks[index].parentElement.style.display = 'none';
+    }
+  })
+}
 
 //bugs:
   // 1. pesimistic rendering on new page does not work, had to make it optimistic with temp page id of 1
   // 2. cannot delete or edit new page right after creation
+  // 3. search is case sensitive
 
 
-  //
-  // function searchBook(){
-  //   const search = document.querySelector("#filter-input").value
-  //   const allBooks = document.querySelectorAll(".gift-list li p")
-  //   const giftsArray = Array.from(allGifts)
-  //
-  //   giftsArray.forEach(function(gift, index){
-  //     if (gift.innerText.includes(search)){
-  //       allGifts[index].parentElement.style.display = 'block';
-  //     }else{
-  //       allGifts[index].parentElement.style.display = 'none';
-  //     }
-  //   })
-  // }
+
 
 
 
