@@ -3,9 +3,10 @@ fetchBooks();
 loginForm();
 newBookForm();
 clickBook();
-createNewPage();
+addNewPage();
 showButtons();
 deletePage();
+editPage();
 // let myBooks = document.querySelector("#my-books")
 // $(myBooks).on('click', sortMyBooks())
 })
@@ -61,6 +62,7 @@ function clickBook(){
             let userId = book.attributes.user.id
             let userName = book.attributes.user.username
             if (book.id === bookId){
+              document.querySelector(".modal-body").dataset.id = book.id
               let pages = book.attributes.pages
               iteratePages(pages)
             }
@@ -84,9 +86,21 @@ function iteratePages(pages){
     let image = page.img_url
     let pageP = document.createElement("p")
     pageP.dataset.id = page.id
-    pageP.innerHTML = `<img class="book-img" src="${image}"> <br> ${content}
-    <br><button type="button" class="btn btn-warning edit-page-btn hidden">Edit Page</button>
-    <button class="btn btn-danger delete-btn hidden" type="button">Delete Page</button><br><div class="collapse-hidden-edit"></div>`
+    pageP.className = "page-img-content"
+    pageP.innerHTML = `<img class="book-img" src="${image}"> <br> <p class="page-content">${content}</p>
+    <button class="btn btn-danger delete-btn hidden" type="button">Delete Page</button>
+    <button data-id="${page.id}" type="button" class="btn btn-warning edit-page-btn hidden" data-toggle="collapse" data-target="#collapse-edit-${page.id}" aria-expanded="false" aria-controls="collapseExample">Edit Page</button>
+    <br>
+    <div class="card edit-form-container" data-parent="#all-page-holder">
+      <div class="collapse card-body" id="collapse-edit-${page.id}">
+        <form class="edit-page-form" data-id="${page.id}">
+          <input class="form-control mr-sm-2 edit-img-url-input" type="text" name="img-url">
+          <textarea class="form-control edit-content-input" rows="5" name="input-content"></textarea>
+          <button class="btn btn-outline-success my-2 my-sm-0 create-page-btn" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+    `
     modalBody.append(pageP)
   })
 }
@@ -111,6 +125,8 @@ function loginForm(){
         userId.dataset.id = parseInt(userIdFromDb)
         let bookUserId = document.getElementById("book-user-id")
         bookUserId.dataset.id = parseInt(userIdFromDb)
+        $("#newbook-navbardrop").show();
+        $(".modal-footer").show();
         alert(`Welcome back ${signIn.value}`)
       }
     })
@@ -141,6 +157,8 @@ function createNewUser(username){
       bookUserId.dataset.id = parseInt(data.data.id)
       signInForm.innerText = username
       loginF.parentNode.parentNode.style.display = 'none'
+      $("#newbook-navbardrop").show();
+      $(".modal-footer").show();
       alert(`New user ${username} was created`)
     })
 }
@@ -178,41 +196,52 @@ function newBookForm(){
   })
 }
 
-//submit form, sends data to the function to create new page
-function createNewPage(){
+//adds a new page in a book, persists data in database, optimistic rendering
+function addNewPage(){
   let pageForm = document.querySelector(".new-page-form")
   $(pageForm).on("submit", function(e){
     e.preventDefault()
     let bookTitle = document.querySelector(".modal-title")
     let image = document.querySelector("#img-url-input").value
     let contentField = document.querySelector("#content-input")
-    let content = document.querySelector("#content-input").value
+    let page_content = document.querySelector("#content-input").value
     let bookId = bookTitle.dataset.id
     let hiddenInput = document.querySelector(".modal-user-id")
     let userId = hiddenInput.dataset.id
-    addNewPage(image, content, bookId, userId)
-  })
-}
-//adds a new page in a book, persists data in database, optimistic rendering
-function addNewPage(image, page_content, bookId, userId){
-  let modalBody = document.querySelector(".modal-body")
-  let pageP = document.createElement("p")
-  pageP.innerHTML = `<img class="book-img" src="${image}"> <br> ${page_content}<br><button type="button" class="btn btn-warning edit-page-btn hidden">Edit Page</button>
-  <button class="btn btn-danger delete-btn hidden" type="button">Delete Page</button>`
-  modalBody.append(pageP)
-  document.querySelector(".new-page-form").reset()
 
-  fetch("http://localhost:3000/api/v1/pages", {
-    method: "POST",
-    headers: {
-      "Content-type": "application/json",
-      Accept: "application/json"
-    },
-    body: JSON.stringify({
-      "img_url": image,
-      "content": page_content,
-      "book_id": parseInt(bookId),
-      "user_id": parseInt(userId)
+    let modalBody = document.querySelector(".modal-body")
+    let pageP = document.createElement("p")
+    pageP.className = "page-img-content"
+    let pageId = 1
+    pageP.innerHTML =
+    `<img class="book-img" src="${image}"> <br> <p class="page-content">${page_content}</p>
+    <button class="btn btn-danger delete-btn hidden" type="button">Delete Page</button>
+    <button data-id="${pageId}" type="button" class="btn btn-warning edit-page-btn hidden" data-toggle="collapse" data-target="#collapse-edit-${pageId}" aria-expanded="false" aria-controls="collapseExample">Edit Page</button>
+    <br>
+    <div class="card edit-form-container" data-parent="#all-page-holder">
+      <div class="collapse card-body" id="collapse-edit-${pageId}">
+        <form class="edit-page-form" data-id="${pageId}">
+          <input class="form-control mr-sm-2 edit-img-url-input" type="text" name="img-url">
+          <textarea class="form-control edit-content-input" rows="5" name="input-content"></textarea>
+          <button class="btn btn-outline-success my-2 my-sm-0 create-page-btn" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>`
+    modalBody.append(pageP)
+    pageForm.reset()
+
+    fetch("http://localhost:3000/api/v1/pages", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        "img_url": image,
+        "content": page_content,
+        "book_id": parseInt(bookId),
+        "user_id": parseInt(userId)
+      })
     })
   })
 }
@@ -240,17 +269,82 @@ function deletePage(){
 }
 
 //edit a page in a book
-// function editPage(){
-//   let editCollapse = $(".collapse-hidden-edit")
-// 
-// }
+//if page id === edit-page-btn page id, then populate the inputs
+function editPage(){
+  let modalBody = $(".modal-body")
+  $(modalBody).on("click", function(e){
+
+    let pageId1 = e.target.parentNode.dataset.id
+    let editBtnId = e.target.dataset.id
+    if(e.target.classList.contains("edit-page-btn") && (pageId1 === editBtnId)){
+
+      let parent = e.target.parentNode
+      let pageImage = parent.querySelector(".book-img").src
+      let pageContent = parent.querySelector(".page-content").innerText
+
+      let bookId = parent.parentNode.dataset.id
+      let pageId = parent.dataset.id
+      let userId = parent.parentNode.parentNode.querySelector(".modal-user-id").dataset.id
+
+      let imgInput = parent.querySelector(".edit-img-url-input")
+      let contentInput = parent.querySelector(".edit-content-input")
+      imgInput.value = pageImage
+      contentInput.value = pageContent
+
+      fetchEditPage(parent, bookId, pageId, userId)
+    }
+  })
+}
+
+
+function fetchEditPage(parent, bookId, pageId, userId){
+  let editForm = parent.querySelector(".edit-page-form")
+  $(editForm).on("submit", function(e){
+    e.preventDefault()
+    let pageImage = parent.querySelector(".book-img")
+    let pageContent = parent.querySelector(".page-content")
+
+    pageImage.src = parent.querySelector(".edit-img-url-input").value
+    pageContent.innerText = parent.querySelector(".edit-content-input").value
+
+    fetch(`http://localhost:3000/api/v1/pages/${pageId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        "book_id": bookId,
+        "user_id": userId,
+        "page_id": pageId,
+        "img_url": parent.querySelector(".edit-img-url-input").value,
+        "content": parent.querySelector(".edit-content-input").value
+      })
+    })
+  })
+}
+
+
 
 //bugs:
-  // 1. new page collapse is small
-  // 2.
+  // 1. pesimistic rendering on new page does not work, had to make it optimistic with temp page id of 1
+  // 2. cannot delete or edit new page right after creation
 
 
-
+  //
+  // function searchBook(){
+  //   const search = document.querySelector("#filter-input").value
+  //   const allBooks = document.querySelectorAll(".gift-list li p")
+  //   const giftsArray = Array.from(allGifts)
+  //
+  //   giftsArray.forEach(function(gift, index){
+  //     if (gift.innerText.includes(search)){
+  //       allGifts[index].parentElement.style.display = 'block';
+  //     }else{
+  //       allGifts[index].parentElement.style.display = 'none';
+  //     }
+  //   })
+  // }
 
 
 

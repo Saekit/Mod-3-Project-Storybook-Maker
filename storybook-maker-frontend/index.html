@@ -11,14 +11,12 @@
     <link rel="stylesheet" href="src/style.css">
 
 
-  <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark justify-content-between">
     <a id="show-all-books" class="navbar-brand" href="#">Story Book</a>
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a id="my-books" class="nav-link" href="#">My Books</a>
-      </li>
+    <ul class="navbar-nav mr-auto">
+      <!--Create New Book Form start-->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="newbook-navbardrop" data-toggle="dropdown">New Book</a>
+        <a class="nav-link dropdown-toggle hidden" href="#" id="newbook-navbardrop" data-toggle="dropdown">New Book</a>
         <div class="dropdown-menu">
           <div class="new-book-container">
             <form class="new-book-form">
@@ -29,6 +27,8 @@
           </div>
         </div>
       </li>
+      <!--Create New Book Form end-->
+
       <!--Sign in dropdown start-->
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">Sign in</a>
@@ -45,10 +45,11 @@
     </ul>
     <!--Sign in dropdown end-->
 
-    <form class="form-inline" action="/action_page.php">
+    <form class="form-inline">
       <input class="form-control mr-sm-2" type="search" aria-label="Search" placeholder="Search for a Book">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
+
 
   </nav>
 
@@ -71,18 +72,21 @@
                   <span aria-hidden="true">&times;</span>
                 </button>
               </div>
-              <div class="modal-body">
+              <div class="modal-body" id="all-page-holder">
 
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-warning edit-book-btn">Edit Book</button>
                 <button type="button" class="btn btn-info add-page-btn" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Add New Page</button>
-                <div class="collapse" id="collapseExample">
+                <br>
+              </div>
+              <div class="card">
+                <div class="collapse card-body" id="collapseExample">
                   <form class="new-page-form">
                     <input id="page-book-id" type="hidden">
                     <input id="img-url-input" class="form-control mr-sm-2" type="text" placeholder="Image URL" name="img-url">
-                    <input id="content-input" class="form-control mr-sm-2" type="text" placeholder="Content" name="content">
+                    <textarea id="content-input" class="form-control" rows="5" placeholder="Tell your story here"></textarea>
                     <button class="btn btn-outline-success my-2 my-sm-0 create-page-btn" type="submit">Add Page</button>
                   </form>
                 </div>
