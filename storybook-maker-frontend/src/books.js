@@ -8,8 +8,26 @@ showButtons();
 deletePage();
 editPage();
 searchBook();
+showBookBtns();
+deleteBook();
+editTitle();
 $(".search-book").on("input", searchBook);
 })
+
+//search for anything included within the book cover, connected to the input at the top
+function searchBook(){
+  let search = document.querySelector(".search-book").value
+  let allBooks = document.querySelectorAll("#all-books li p")
+  let booksArray = Array.from(allBooks)
+  booksArray.forEach(function(book, index){
+    if (book.innerText.includes(search)){
+      allBooks[index].parentElement.style.display = 'block';
+    }else{
+      allBooks[index].parentElement.style.display = 'none';
+    }
+  })
+}
+
 
 //GET request for all the books
 const books_url = `http://localhost:3000/api/v1/books`
@@ -31,7 +49,20 @@ function loadBooks(book){
   let allBooksUl = document.querySelector('#all-books')
   let bookListLi = document.createElement('li')
   bookListLi.innerHTML =
-  `<p class="book-cover" data-toggle="modal" data-target="#exampleModalLong" data-id="${book.id}">${bookTitle} - ${user}</p>`
+  `<p class="book-cover" data-toggle="modal" data-target="#exampleModalLong" data-id="${book.id}">${bookTitle} - ${user}<input type="hidden" class="user-id" data-id="${userId}"></p>
+  <div class="btn-group btn-group-sm" role="group">
+  <button type="button" class="btn btn-warning edit-book-title" data-id="${book.id}" type="button" data-toggle="collapse" data-target="#collapse-edit-${book.id}" aria-expanded="false" aria-controls="collapseExample">Edit Title</button>
+  <button type="button" class="btn btn-danger delete-book">Delete Book</button>
+  </div>
+  <div class="edit-title-container">
+    <div class="collapse" id="collapse-edit-${book.id}">
+      <form class="edit-title-form" data-id="${book.id}">
+        <input class="form-control mr-sm-2 edit-title-input" type="text" name="title">
+        <button class="btn btn-outline-success my-2 my-sm-0 title-btn" type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+  `
   allBooksUl.appendChild(bookListLi)
 }
 
@@ -65,6 +96,7 @@ function clickBook(){
     }
   })
 }
+
 //shows pages that exist in the database
 function iteratePages(pages){
   let modalBody = document.querySelector(".modal-body")
@@ -113,8 +145,9 @@ function loginForm(){
         userId.dataset.id = parseInt(userIdFromDb)
         let bookUserId = document.getElementById("book-user-id")
         bookUserId.dataset.id = parseInt(userIdFromDb)
-        $("#newbook-navbardrop").show();
+        $(".new-book-li").show();
         $(".modal-footer").show();
+        $(".edit-book-li").show();
         alert(`Welcome back ${signIn.value}`)
       }
     })
@@ -145,8 +178,9 @@ function createNewUser(username){
       bookUserId.dataset.id = parseInt(data.data.id)
       signInForm.innerText = username
       loginF.parentNode.parentNode.style.display = 'none'
-      $("#newbook-navbardrop").show();
       $(".modal-footer").show();
+      $(".new-book-li").show();
+      $(".edit-book-li").show();
       alert(`New user ${username} was created`)
     })
 }
@@ -176,7 +210,20 @@ function newBookForm(){
         let allBooksUl = document.querySelector('#all-books')
         let bookListLi = document.createElement('li')
         bookListLi.innerHTML =
-        `<p class="book-cover" data-toggle="modal" data-target="#exampleModalLong" data-id="${book.data.id}">${bookTitle} - ${user}</p>`
+        `<p class="book-cover" data-toggle="modal" data-target="#exampleModalLong" data-id="${book.data.id}">${bookTitle} - ${user}</p>
+        <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn btn-warning edit-book-title" data-id="${book.data.id}" type="button" data-toggle="collapse" data-target="#collapse-edit-${book.data.id}" aria-expanded="false" aria-controls="collapseExample">Edit Title</button>
+        <button type="button" class="btn btn-danger delete-book">Delete Book</button>
+        </div>
+        <div class="edit-title-container">
+          <div class="collapse" id="collapse-edit-${book.data.id}">
+            <form class="edit-title-form" data-id="${book.data.id}">
+              <input class="form-control mr-sm-2 edit-title-input" type="text" name="title">
+              <button class="btn btn-outline-success my-2 my-sm-0 title-btn" type="submit">Submit</button>
+            </form>
+          </div>
+        </div>
+        `
         allBooksUl.appendChild(bookListLi)
         let newBookF = document.querySelector(".new-book-form")
         newBookF.reset();
@@ -311,90 +358,79 @@ function fetchEditPage(parent, bookId, pageId, userId){
   })
 }
 
-//search for anything included within the book cover, connected to the input at the top
-function searchBook(){
-  let search = document.querySelector(".search-book").value
-  let allBooks = document.querySelectorAll("#all-books li p")
-  let booksArray = Array.from(allBooks)
-  booksArray.forEach(function(book, index){
-    if (book.innerText.includes(search)){
-      allBooks[index].parentElement.style.display = 'block';
-    }else{
-      allBooks[index].parentElement.style.display = 'none';
+
+//toggles the edit and delete button under the book covers
+function showBookBtns(){
+  $(".edit-book-title-a").on("click", function(e){
+    $(".edit-book-title").toggle();
+    $(".delete-book").toggle();
+  })
+}
+// deletes book
+function deleteBook(){
+  $("#all-books").on("click", function(e){
+    if (e.target.classList.contains("delete-book")){
+      let book = e.target.parentNode.parentNode
+      let bookId = parseInt(book.querySelector("p").dataset.id)
+      let result = confirm("Are you sure you want to delete this book?");
+      if (result) {
+        fetch(`http://localhost:3000/api/v1/books/${bookId}`, {
+          method: "DELETE"
+        }).then(book.remove())
+      }
     }
   })
 }
+
+// clicking edit under the book will show a collapse that will allow you to change the book title
+
+function editTitle(){
+  $("#all-books").on("click", function(e){
+    console.log(e.target)
+    let bookId = e.target.parentNode.parentNode.querySelector("p").dataset.id
+    let editBtnId = e.target.dataset.id
+    if(e.target.classList.contains("edit-book-title") && (bookId === editBtnId)){
+      let parent = e.target.parentNode.parentNode
+      let title = parent.querySelector("p")
+      let userId = parent.querySelector(".user-id").dataset.id
+      let titleInput = parent.querySelector(".edit-title-input")
+      titleInput.value = title.innerText
+      fetchBookTitle(parent, userId, bookId)
+    }
+  })
+}
+
+function fetchBookTitle(parent, userId, bookId){
+  let editForm = parent.querySelector(".edit-title-form")
+  $(editForm).on("submit", function(e){
+    e.preventDefault()
+    let bookTitle = parent.querySelector("p")
+    bookTitle.innerText = parent.querySelector(".edit-title-input").value
+    fetch(`http://localhost:3000/api/v1/books/${bookId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json"
+      },
+      body: JSON.stringify({
+        "book_id": bookId,
+        "user_id": userId,
+        "title": parent.querySelector(".edit-title-input").value
+      })
+    })
+  })
+}
+
+
+
+
+
+
+
 
 //bugs:
   // 1. pesimistic rendering on new page does not work, had to make it optimistic with temp page id of 1
   // 2. cannot delete or edit new page right after creation
   // 3. search is case sensitive
-
-
-
-
-
-
-// function drawing(){
-// var canvasDiv = document.getElementById('canvasDiv');
-// canvas = document.createElement('canvas');
-// canvas.setAttribute('width', canvasWidth);
-// canvas.setAttribute('height', canvasHeight);
-// canvas.setAttribute('id', 'canvas');
-// canvasDiv.appendChild(canvas);
-// if(typeof G_vmlCanvasManager != 'undefined') {
-//   canvas = G_vmlCanvasManager.initElement(canvas);
-// }
-// //when user clicks canvas, record position, update with redraw
-// context = canvas.getContext("2d");
-// $('#canvas').mousedown(function(e){
-//   var mouseX = e.pageX - this.offsetLeft;
-//   var mouseY = e.pageY - this.offsetTop;
-//   paint = true;
-//   addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-//   redraw();
-// });
-// //click and drag to draw, if paint is true record it
-// $('#canvas').mousemove(function(e){
-//   if(paint){
-//     addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-//     redraw();
-//   }
-// });
-// //user lets go of their drag then paint will be false
-// $('#canvas').mouseup(function(e){
-//   paint = false;
-// });
-// //user leaves the canvas then paint will be false
-// $('#canvas').mouseleave(function(e){
-//   paint = false;
-// })
-// //addclick will save the click position
-// var clickX = new Array();
-// var clickY = new Array();
-// var clickDrag = new Array();
-// var paint;
-// function addClick(x, y, dragging){
-//   clickX.push(x);
-//   clickY.push(y);
-//   clickDrag.push(dragging);
-// }
-// //redraw function to clear the canvas
-// function redraw(){
-//   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-//   context.strokeStyle = "#df4b26";
-//   context.lineJoin = "round";
-//   context.lineWidth = 5;
-//   for(var i=0; i < clickX.length; i++){
-//     context.beginPath();
-//     if(clickDrag[i] && i){
-//       context.moveTo(clickX[i-1], clickY[i-1]);
-//     } else {
-//       context.moveTo(clickX[i]-1, clickY[i]);
-//     }
-//     context.lineTo(clickX[i], clickY[i]);
-//     context.closePath();
-//     context.stroke();
-//   }
-// }
-// }
+  // 4. name of book title editor shows in the title along with original creator
+  // 5. sometimes cannot edit older pages after making a new one

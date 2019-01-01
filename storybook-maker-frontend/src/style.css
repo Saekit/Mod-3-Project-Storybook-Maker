@@ -39,11 +39,12 @@ p.book-cover {
   background-color: white;
   opacity: 1;
   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+  list-style-type: none;
 }
 
 .book-img{
-  height: 250px;
-  width: 260px;
+  height: 280px;
+  width: 350px;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -60,4 +61,16 @@ p.book-cover {
 .modal-footer {
   display: none;
   text-align: center;
+}
+.new-book-li {
+  display: none;
+}
+.edit-book-li {
+  display: none;
+}
+.edit-book-title {
+  display: none;
+}
+.delete-book {
+  display: none;
 }
