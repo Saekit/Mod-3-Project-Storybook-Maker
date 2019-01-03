@@ -166,7 +166,7 @@ function newBookForm(){
         let allBooksUl = document.querySelector('#all-books')
         let bookListLi = document.createElement('li')
         bookListLi.innerHTML =
-        `<p class="book-cover" data-toggle="modal" data-target="#exampleModalLong" data-id="${book.data.id}">${bookTitle} - ${user}</p>
+        `<p class="book-cover" data-toggle="modal" data-target="#exampleModalLong" data-id="${book.data.id}">${bookTitle} - ${user}<input type="hidden" class="user-id" data-id="${userId.dataset.id}"></p>
 
         <div class="btn-group btn-group-sm" role="group" data-id="${userId.dataset.id}">
         <button type="button" class="btn btn-warning edit-book-title" data-id="${book.data.id}" type="button" data-toggle="collapse" data-target="#collapse-edit-${book.data.id}" aria-expanded="false" aria-controls="collapseExample">Edit Title</button>
@@ -281,6 +281,8 @@ function addNewPage(){
       .then(page => {
         let modalBody = document.querySelector(".modal-body")
         let pageP = document.createElement("p")
+
+
         pageP.className = "page-img-content"
         pageP.innerHTML =
         `<img class="book-img" src="${image}"> <br> <p class="page-content">${page_content}</p>
@@ -324,7 +326,7 @@ function editPage(){
       let contentInput = parent.querySelector(".edit-content-input")
       imgInput.value = pageImage
       contentInput.value = pageContent
-
+      // debugger
       fetchEditPage(parent, bookId, pageId, userId)
     }
   })
@@ -386,15 +388,15 @@ function showBookBtns(){
   let userId = document.querySelector("#navbardrop")
   let editBookBtn = document.querySelector(".edit-book-title-a")
   let editTitleBtn = $(".btn-group")
-    $(editBookBtn).on("click", function(e){
-      document.querySelectorAll(`.book-cover input[data-id="${userId.dataset.id}"]`).forEach(function(book){
-        let buttonDiv = book.parentNode.parentNode
-        let editBtn = buttonDiv.querySelector(".edit-book-title")
-        let deleteBtn = buttonDiv.querySelector(".delete-book")
-        $(editBtn).toggle()
-        $(deleteBtn).toggle()
-      })
+  $(editBookBtn).on("click", function(e){
+    document.querySelectorAll(`.book-cover input[data-id="${userId.dataset.id}"]`).forEach(function(book){
+      let buttonDiv = book.parentNode.parentNode
+      let editBtn = buttonDiv.querySelector(".edit-book-title")
+      let deleteBtn = buttonDiv.querySelector(".delete-book")
+      $(editBtn).toggle()
+      $(deleteBtn).toggle()
     })
+  })
 }
 
 // deletes book
@@ -465,6 +467,7 @@ function myBooks(){
             document.querySelector(".my-books-a").innerText = "All Books"
           } else {
             allBooks[index].parentElement.style.display = 'none';
+            document.querySelector(".my-books-a").innerText = "All Books"
           }
           })
       } else {
@@ -492,3 +495,4 @@ function myBooks(){
 
   //Better fixes:
   // 1. have the modal pop up after you create a new book
+  // 2. hide the image if there is none, only show the content
