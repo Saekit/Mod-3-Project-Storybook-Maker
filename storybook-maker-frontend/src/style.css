@@ -74,3 +74,6 @@ p.book-cover {
 .delete-book {
   display: none;
 }
+.my-books-btn {
+  display: none;
+}
