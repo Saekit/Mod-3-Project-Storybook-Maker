@@ -7,7 +7,6 @@
 body {
  font-family:'Bookish';
  background-image: url('../images/librarybk.jpeg');
-
 }
 
 #header{
@@ -21,6 +20,7 @@ body {
   flex-flow: row wrap;
   justify-content: space-around;
   height: 300px;
+  list-style-type: none;
 }
 p.book-cover {
   width: 150px;
@@ -34,6 +34,9 @@ p.book-cover {
   background-color: white;
   opacity: 0.8;
   list-style-type: none;
+  background-image: url('http://www.template-joomspirit.com/template-joomla/template-100/images/background/light-brown-NR.jpg');
+  font-weight: 700;
+  font-size: 17px;
 }
 .book-cover:hover {
   background-color: white;
