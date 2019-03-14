@@ -1,5 +1,6 @@
 Welcome to Story Book, a single page web application that allows you to read and write stories of your own creation! This community allows you to also read other user's books and add your own ideas to them.
 This version lets you add pictures to your pages.
+Demo: https://youtu.be/ciGhzl1E2-Y
 
 Instructions for use:
 1. Fork and clone this repo.
